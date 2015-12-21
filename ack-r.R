@@ -1,3 +1,5 @@
+library(foreach)  
+library(doParallel)
 library(parallel)
 
 ack <- function(x, y) {
@@ -10,12 +12,11 @@ ack <- function(x, y) {
 }
 
 acks <- function() {
-  ackVals = list(1:3)
-  returnVals = list(1:3)
-  cc <- makeCluster(detectCores() - 1)
-  
-  parLapply(cc, 1:3, function(x) returnVals[x] <- ack(x, x + 1))
-  return (returnVals)
+  cc <- makeCluster(detectCores())
+  results <- foreach(i=1:3) %dopar% {
+    ack(i, i + 1)
+  }
+  return (results)
 }
 
 system.time(replicate(1000, ackReturn <- acks()))
